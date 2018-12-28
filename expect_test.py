@@ -27,11 +27,19 @@ class TestDictIncludesDict(object):
     def test_not_include(self):
         expect(SIMPLE_DICT).to_not.include({'c' : 3})
 
+    @assert_raises("assert 2 != 2")
+    def test_not_include_missing(self):
+        expect(SIMPLE_DICT).to_not.include({'b' : 2})
+
+    def test_include_dict(self):
+        expect({'dict_a' : SIMPLE_DICT, 'dict_b': {}}).to.include({'dict_a' : SIMPLE_DICT})
+
+
 class TestDictIncludesKey(object):
     def test_include_key(self):
         expect(SIMPLE_DICT).to.include.key('a')
 
-    @assert_raises("assert 'c' in ['a', 'b']")
+    @assert_raises("assert 'c' in dict_keys(['a', 'b'])")
     def test_include_key_is_missing(self):
         expect(SIMPLE_DICT).to.include.key('c')
 
@@ -45,6 +53,20 @@ class TestListIncludesValue(object):
     @assert_raises("assert 'c' in ['a', 'b']")
     def test_include_in_list_fail(self):
         expect(['a', 'b']).to.include('c')
+
+class TestDictIncludesValue(object):
+    def test_include_in_dict(self):
+        expect(SIMPLE_DICT).to.include.value(1)
+
+    @assert_raises("assert 3 in dict_values([1, 2])")
+    def test_include_in_dict_fail(self):
+        expect(SIMPLE_DICT).to.include.value(3)
+
+class TestDictIncludeDeep(object):
+    def test_include_dict_in_dict(self):
+        expect({'dict_a': SIMPLE_DICT, 'dict_b' : {'c' : 3}}).to.include({'a' : 1})
+
+
 
 class expect:
     def __init__(self, actual):
@@ -71,6 +93,9 @@ class expect:
         def key(self, key):
             self.expected.include_key(key)
 
+        def value(self, value):
+            self.expected.include_value(value)
+
         def __call__(self, subset):
             self.expected.include_subset(subset)
 
@@ -93,3 +118,9 @@ class expect:
             assert(key not in self._actual.keys())
         else :
             assert(key in self._actual.keys())
+
+    def include_value(self, value):
+        if self.is_negate():
+            assert(value not in self._actual.values())
+        else:
+            assert(value in self._actual.values())

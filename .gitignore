@@ -2,6 +2,9 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyc
+*.pyo
+*.pyd
 
 # C extensions
 *.so
@@ -102,3 +105,7 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# Editor backups
+*.swp
+.DS_Store
